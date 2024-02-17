@@ -1,0 +1,18 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgb(44, 44, 44);
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+    align-items: center;
+    justify-content: center;
+}
+canvas {
+    display: block;
+    /* add a shadow */
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.75);
+}
