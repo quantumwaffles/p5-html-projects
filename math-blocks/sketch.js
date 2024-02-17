@@ -1,9 +1,36 @@
 const GRID_SIZE = 30;
-const blocks = [];
+const MARGIN_TOP = GRID_SIZE * 2;
+const MARGIN_LEFT = 0;
+const MARGIN_RIGHT = 0;
+const MARGIN_BOTTOM = GRID_SIZE * 1;
+
+let blocks = [];
 let isDragging = false;
 /**@type {"add"|"remove"} */
 let mode = null;
 let blockGroups = [];
+
+const tools = {
+    draw: {},
+    cut: {},
+};
+let activeTool = tools.draw;
+const buttonSize = { w: 100, h: 50 };
+const toolbar = [];
+toolbar.push(
+    new Button(10, 10, 75, 30, "Clear", () => {
+        blocks = [];
+        blockGroups = [];
+    })
+);
+
+toolbar.push(
+    new Button(100, 10, 75, 30, "Draw", (btn) => {
+        activeTool = tools.draw;
+        toolbar.forEach((b) => (b.selected = false));
+        btn.selected = true;
+    })
+);
 
 const colors = [
     // 1 red
@@ -19,7 +46,15 @@ const colors = [
     // 6 indigo
     [[75, 0, 130]],
     // 7 rainbow
-    [[255, 0, 0], [255, 165, 0], [255, 255, 0], [0, 128, 0], [0, 0, 255], [75, 0, 130], [128, 0, 128]],
+    [
+        [255, 0, 0],
+        [255, 165, 0],
+        [255, 255, 0],
+        [0, 128, 0],
+        [0, 0, 255],
+        [75, 0, 130],
+        [128, 0, 128],
+    ],
     // viloet
     // [[128, 0, 128]],
     // 8 bright pink
@@ -28,14 +63,16 @@ const colors = [
     [[128, 128, 128]],
     // 10 light grey
     // [[211, 211, 211]],
-]
+];
 
 function setup() {
     // disable right click menu
     document.oncontextmenu = function () {
         return false;
     };
-    createCanvas(windowWidth - 150, windowHeight - 150);
+    // set w to window width - 150 and snap to grid size
+    const w = floor((windowWidth - 150) / GRID_SIZE) * GRID_SIZE;
+    createCanvas(w, windowHeight - 150);
     // hide the mouse
     // noCursor();
 }
@@ -43,10 +80,28 @@ function setup() {
 function draw() {
     background(30);
     drawGrid();
+    drawToolbar();
     drawGroups();
 }
 
+function inBounds(x, y) {
+    return (
+        x > MARGIN_LEFT &&
+        x < width - MARGIN_RIGHT &&
+        y > MARGIN_TOP &&
+        y < height - MARGIN_BOTTOM
+    );
+}
+
 function mousePressed() {
+    if (toolbar.some((button) => button.clicked())) {
+        return;
+    }
+
+    if (!inBounds(mouseX, mouseY)) {
+        return;
+    }
+
     // if left mouse button is pressed, set mode to add. If right mouse button is pressed, set mode to remove
     if (mouseButton === LEFT) {
         mode = "add";
@@ -65,9 +120,20 @@ function mousePressed() {
 
 function mouseReleased() {
     isDragging = false;
+    toolbar.forEach((button) => (button.isActive = false));
+}
+
+function mouseMoved() {
+    for (let button of toolbar) {
+        button.hover();
+    }
 }
 
 function mouseDragged() {
+    if (!inBounds(mouseX, mouseY)) {
+        return false;
+    }
+
     if (isDragging) {
         if (mode === "remove") {
             removeBlock(mouseX, mouseY);
@@ -87,8 +153,8 @@ function drawGroups() {
         let colorIndex = 0;
         for (let cell of group) {
             // pick the next color in the sequence and wrap around if necessary
-            color = colorSeq[colorIndex++ % colorSeq.length];
-            drawSquare(GRID_SIZE, color, cell.x, cell.y);
+            c = colorSeq[colorIndex++ % colorSeq.length];
+            drawSquare(GRID_SIZE, c, cell.x, cell.y);
         }
 
         drawGroupLabel(group);
@@ -106,7 +172,6 @@ function addBlock(x, y) {
         blocks.push({ x: xPos, y: yPos });
         blockGroups = groupBlocks();
     }
-
 }
 
 function removeBlock(x, y) {
@@ -121,7 +186,7 @@ function removeBlock(x, y) {
     }
 }
 
-// create a copy of the blocks array and group them by proximity. 
+// create a copy of the blocks array and group them by proximity.
 // Any blocks that are touching will be grouped together
 function groupBlocks() {
     let groupedBlocks = [];
@@ -163,12 +228,12 @@ function getNeighbors(cell, cells) {
 // the label should be drawn above the leftmost block on the top row
 function drawGroupLabel(group) {
     // find the topmost position
-    let y = group.reduce((a, b) => a.y < b.y ? a : b).y;
+    let y = group.reduce((a, b) => (a.y < b.y ? a : b)).y;
     // find the rightmost position of the blocks with the topmost y value
-    let x = group.
-        filter((cell) => cell.y === y).
-        reduce((a, b) => a.x < b.x ? a : b).x;
-        
+    let x = group
+        .filter((cell) => cell.y === y)
+        .reduce((a, b) => (a.x < b.x ? a : b)).x;
+
     const label = group.length;
     drawLabel(x, y, label);
 }
@@ -221,3 +286,14 @@ function drawSquare(size, color, x, y) {
     pop();
 }
 
+function drawToolbar() {
+    // draw a rectangle across the top of the screen in the margin
+    push();
+    fill(50);
+    rect(0, 0, width, MARGIN_TOP);
+    pop();
+
+    for (let button of toolbar) {
+        button.draw();
+    }
+}
