@@ -1,8 +1,8 @@
 const GRID_SIZE = 30;
-const MARGIN_TOP = GRID_SIZE * 2;
+const MARGIN_TOP = GRID_SIZE * 3;
 const MARGIN_LEFT = 0;
 const MARGIN_RIGHT = 0;
-const MARGIN_BOTTOM = GRID_SIZE * 1;
+const MARGIN_BOTTOM = 0;
 
 let blocks = [];
 let isDragging = false;
@@ -17,18 +17,20 @@ const tools = {
 let activeTool = tools.draw;
 const buttonSize = { w: 100, h: 50 };
 const toolbar = [];
+const BUTTON_HEIGHT = 50;
+const BUTTON_WIDTH = 75;
 toolbar.push(
-    new Button(10, 10, 75, 30, "Clear", () => {
+    new Button(10, 10, BUTTON_WIDTH, BUTTON_HEIGHT, "Clear", () => {
         blocks = [];
         blockGroups = [];
     })
 );
 
 toolbar.push(
-    new Button(100, 10, 75, 30, "Draw", (btn) => {
+    new Button(100, 10, BUTTON_WIDTH, BUTTON_HEIGHT, "Draw", (btn) => {
         activeTool = tools.draw;
-        toolbar.forEach((b) => (b.selected = false));
-        btn.selected = true;
+        toolbar.forEach((b) => (b.select(false)));
+        btn.select(true);
     })
 );
 
@@ -70,9 +72,11 @@ function setup() {
     document.oncontextmenu = function () {
         return false;
     };
-    // set w to window width - 150 and snap to grid size
-    const w = floor((windowWidth - 150) / GRID_SIZE) * GRID_SIZE;
-    createCanvas(w, windowHeight - 150);
+    const PAD_X = 30;
+    const PAD_Y = 40;
+    const w = floor((windowWidth - PAD_X) / GRID_SIZE) * GRID_SIZE;
+    const h = floor((windowHeight - PAD_Y) / GRID_SIZE) * GRID_SIZE;
+    createCanvas(w, h);
     // hide the mouse
     // noCursor();
 }

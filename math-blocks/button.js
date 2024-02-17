@@ -8,18 +8,30 @@ class Button {
         this.callback = callback;
         this.isHovering = false;      
         this.isActive = false;  
-        this.selected = false;
+        this.isSelected = false;
+    }
+
+    select(isSelected) {
+        this.isSelected = isSelected;
     }
 
     draw() {
         push();
         fill(255);
+
         if (this.isHovering) {
             fill(200);
         }
+
         if (this.isActive) {
             fill(150);
         }
+
+        if (this.isSelected) {
+            // set yellow
+            fill(255, 255, 0);
+        }
+
         rect(this.x, this.y, this.w, this.h);
         fill(0);
         textSize(20);
