@@ -26,13 +26,13 @@ toolbar.push(
     })
 );
 
-toolbar.push(
-    new Button(100, 10, BUTTON_WIDTH, BUTTON_HEIGHT, "Draw", (btn) => {
-        activeTool = tools.draw;
-        toolbar.forEach((b) => (b.select(false)));
-        btn.select(true);
-    })
-);
+// toolbar.push(
+//     new Button(100, 10, BUTTON_WIDTH, BUTTON_HEIGHT, "Draw", (btn) => {
+//         activeTool = tools.draw;
+//         // toolbar.forEach((b) => (b.select(false)));
+//         // btn.select(true);
+//     })
+// );
 
 const colors = [
     // 1 red
@@ -86,6 +86,7 @@ function draw() {
     drawGrid();
     drawToolbar();
     drawGroups();
+    drawEquationLabel();
 }
 
 function inBounds(x, y) {
@@ -300,4 +301,25 @@ function drawToolbar() {
     for (let button of toolbar) {
         button.draw();
     }
+}
+
+// now we're going to draw a label at the top of the screen
+// if there is only 1 group, then we'll just show the total number of blocks
+// if there are multiple groups, then we'll show an equation that adds each group
+// to equal the total number of blocks
+function drawEquationLabel() {
+    let total = blocks.length;
+    let label = total;
+    if (blockGroups.length > 1) {
+        label = blockGroups
+            .map((group) => group.length)
+            .join(" + ")
+            .concat(" = " + total);
+    }
+    push();
+    fill(255);
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    text(label, width / 2, 20);
+    pop();
 }
