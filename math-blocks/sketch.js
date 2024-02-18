@@ -282,8 +282,10 @@ function drawSquare(size, color, x, y) {
     let yPos = floor(y / size) * size;
     // set the fill color
     fill(color);
-    // add a white border
-    stroke(255);
+    // set the border to a color that is slightly darker than the fill color
+    stroke(color.map((c) => (c * 0.8) | 0));
+    
+    strokeWeight(2);
     // draw the square
     rect(xPos, yPos, size, size);
 
