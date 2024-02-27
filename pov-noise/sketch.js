@@ -20,8 +20,7 @@ function setup() {
     g2 = createGraphics(Math.floor(w / SCALE), Math.floor(h / SCALE));
 
     fillRandomNoise(g);
-
-    // initialize two random points
+    
     for (let i = 0; i < 2; i++) {
         const x = floor(random(g.width));
         const y = floor(random(g.height));
@@ -70,14 +69,24 @@ function keyPressed() {
     }
 }
 
-function mousePressed() {
-    paused = !paused;
-    if (paused) {
-        noLoop();
-    } else {
-        loop();
-    }
+function touchStarted() {
+    paused = true;
+    noLoop();
 }
+
+function touchEnded() {
+    paused = false;
+    loop();
+}
+
+// function mousePressed() {
+//     paused = !paused;
+//     if (paused) {
+//         noLoop();
+//     } else {
+//         loop();
+//     }
+// }
 
 function fillRandomNoise(g) {
     g.loadPixels();
