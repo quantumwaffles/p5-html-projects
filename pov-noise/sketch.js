@@ -5,7 +5,7 @@ const SCALE = 10;
 let points = [];
 
 function setup() {
-    const PAD = 30;
+    const PAD = 60;
     const minDim = min(windowWidth, windowHeight);
     const w = minDim - PAD;
     const h = minDim - PAD;
@@ -32,30 +32,37 @@ function setup() {
 
 function draw() {
     // g.background(0);
+    const steps = 2;
+    for(let step = 0; step < steps; step++) {
+        for (let i = 0; i < points.length - 1; i++) {
+            drawLine(
+                points[i].loc.x,
+                points[i].loc.y,
+                points[i + 1].loc.x,
+                points[i + 1].loc.y,
+                g
+            );
+            // g.stroke(255, 0, 0);
+            // g.line(
+            //     points[i].loc.x,
+            //     points[i].loc.y,
+            //     points[i + 1].loc.x,
+            //     points[i + 1].loc.y
+            // )
+        }
+    
+        for (let p of points) {
+            p.update(g);
+        }
 
-    for (let i = 0; i < points.length - 1; i++) {
-        drawLine(
-            points[i].loc.x,
-            points[i].loc.y,
-            points[i + 1].loc.x,
-            points[i + 1].loc.y,
-            g
-        );
-        // g.stroke(255, 0, 0);
-        // g.line(
-        //     points[i].loc.x,
-        //     points[i].loc.y,
-        //     points[i + 1].loc.x,
-        //     points[i + 1].loc.y
-        // )
-    }
-
-    for (let p of points) {
-        p.update(g);
     }
 
     g2.image(g, 0, 0);
     image(g2, 0, 0, width, height);
+
+    rect(0, 0, 240, 40);
+    textSize(32);
+    text("Touch to Pause", 10, 30);
 }
 
 function keyPressed() {
@@ -79,14 +86,6 @@ function touchEnded() {
     loop();
 }
 
-// function mousePressed() {
-//     paused = !paused;
-//     if (paused) {
-//         noLoop();
-//     } else {
-//         loop();
-//     }
-// }
 
 function fillRandomNoise(g) {
     g.loadPixels();
@@ -142,7 +141,7 @@ function drawLine(x0, y0, x1, y1, g) {
         }
     }
 
-    g.updatePixels();
+    g.updatePixels();    
 }
 
 // takes 2 integers and provdes an xor of their bits
